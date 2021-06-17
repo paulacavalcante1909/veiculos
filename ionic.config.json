@@ -1,0 +1,8 @@
+{
+  "name": "veiculos",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue",
+  "id": "1d59db70"
+}
