@@ -5,16 +5,31 @@
         <ion-content>
           <ion-list id="inbox-list">
             <ion-list-header>CrudCar</ion-list-header>
-            <ion-note>Gerenciamento de veículos</ion-note>
-  
-            <ion-menu-toggle auto-hide="false" v-for="(p, i) in appPages" :key="i">
-              <ion-item @click="selectedIndex = i" router-direction="root" :router-link="p.url" lines="none" detail="false" class="hydrated" :class="{ selected: selectedIndex === i }">
-                <ion-icon slot="start" :ios="p.iosIcon" :md="p.mdIcon"></ion-icon>
+            <br />
+         
+            <ion-menu-toggle
+              auto-hide="false"
+              v-for="(p, i) in appPages"
+              :key="i"
+            >
+              <ion-item
+                @click="selectedIndex = i"
+                router-direction="root"
+                :router-link="p.url"
+                lines="none"
+                detail="false"
+                class="hydrated"
+                :class="{ selected: selectedIndex === i }"
+              >
+                <ion-icon
+                  slot="start"
+                  :ios="p.iosIcon"
+                  :md="p.mdIcon"
+                ></ion-icon>
                 <ion-label>{{ p.title }}</ion-label>
               </ion-item>
             </ion-menu-toggle>
           </ion-list>
-  
         </ion-content>
       </ion-menu>
       <ion-router-outlet id="main-content"></ion-router-outlet>
@@ -23,74 +38,101 @@
 </template>
 
 <script lang="ts">
-import { IonApp, IonContent, IonIcon, IonItem, IonLabel, IonList, IonListHeader, IonMenu, IonMenuToggle, IonNote, IonRouterOutlet, IonSplitPane } from '@ionic/vue';
-import { defineComponent, ref } from 'vue';
-import { useRoute } from 'vue-router';
-import { archiveOutline, archiveSharp, bookmarkOutline, addCircleOutline,bookmarkSharp,car, heartOutline, heartSharp, mailOutline, mailSharp, paperPlaneOutline, paperPlaneSharp, trashOutline, trashSharp, warningOutline, warningSharp } from 'ionicons/icons';
+import {
+  IonApp,
+  IonContent,
+  IonIcon,
+  IonItem,
+  IonLabel,
+  IonList,
+  IonListHeader,
+  IonMenu,
+  IonMenuToggle,
+  IonRouterOutlet,
+  IonSplitPane,
+} from "@ionic/vue";
+import { defineComponent, ref } from "vue";
+import { useRoute } from "vue-router";
+import {
+  archiveOutline,
+  archiveSharp,
+  bookmarkOutline,
+  addCircleOutline,
+  bookmarkSharp,
+  car,
+  heartOutline,
+  heartSharp,
+  mailOutline,
+  mailSharp,
+  paperPlaneOutline,
+  paperPlaneSharp,
+  trashOutline,
+  trashSharp,
+  warningOutline,
+  warningSharp,
+} from "ionicons/icons";
 
 export default defineComponent({
-  name: 'App',
+  name: "App",
   components: {
-    IonApp, 
-    IonContent, 
-    IonIcon, 
-    IonItem, 
-    IonLabel, 
-    IonList, 
-    IonListHeader, 
-    IonMenu, 
-    IonMenuToggle, 
-    IonNote, 
-    IonRouterOutlet, 
+    IonIcon,
+    IonApp,
+    IonContent,
+    IonItem,
+    IonLabel,
+    IonList,
+    IonListHeader,
+    IonMenu,
+    IonMenuToggle,
+    IonRouterOutlet,
     IonSplitPane,
   },
   setup() {
     const selectedIndex = ref(0);
     const appPages = [
       {
-        title: 'Todos os veículos',
-        url: '/all',
+        title: "Todos os veículos",
+        url: "/all",
         iosIcon: car,
-        mdIcon: car
+        mdIcon: car,
       },
       {
-        title: 'Adicionar um veículo',
-        url: '/add',
+        title: "Adicionar um veículo",
+        url: "/add",
         iosIcon: addCircleOutline,
-        mdIcon: addCircleOutline
+        mdIcon: addCircleOutline,
       },
-     
-     
     ];
-  
-    
-    const path = window.location.pathname.split('folder/')[1];
+
+    const path = window.location.pathname.split("folder/")[1];
     if (path !== undefined) {
-      selectedIndex.value = appPages.findIndex(page => page.title.toLowerCase() === path.toLowerCase());
+      selectedIndex.value = appPages.findIndex(
+        (page) => page.title.toLowerCase() === path.toLowerCase()
+      );
     }
-    
+
     const route = useRoute();
-    
-    return { 
+
+    return {
       selectedIndex,
-      appPages, 
-      archiveOutline, 
-      archiveSharp, 
-      bookmarkOutline, 
-      bookmarkSharp, 
-      heartOutline, 
-      heartSharp, 
-      mailOutline, 
-      mailSharp, 
-      paperPlaneOutline, 
-      paperPlaneSharp, 
-      trashOutline, 
-      trashSharp, 
-      warningOutline, 
+      appPages,
+      archiveOutline,
+      archiveSharp,
+      bookmarkOutline,
+      bookmarkSharp,
+      heartOutline,
+      heartSharp,
+      mailOutline,
+      mailSharp,
+      paperPlaneOutline,
+      paperPlaneSharp,
+      trashOutline,
+      trashSharp,
+      warningOutline,
       warningSharp,
-      isSelected: (url: string) => url === route.path ? 'selected' : ''
-    }
-  }
+      isSelected: (url: string) => (url === route.path ? "selected" : ""),
+    };
+  },
 });
 </script>
 

@@ -22,30 +22,62 @@
             <ion-col size="6">
               <ion-item>
                 <ion-label position="floating">Veículo</ion-label>
-                <ion-input></ion-input>
+                <ion-input id="veiculo" v-model="carro.veiculo"></ion-input>
               </ion-item>
             </ion-col>
             <ion-col size="6">
               <ion-item>
                 <ion-label position="floating">Modelo</ion-label>
-                <ion-input></ion-input>
+                <ion-input id="modelo" v-model="carro.modelo"></ion-input>
+              </ion-item>
+            </ion-col>
+            <ion-col size="6">
+              <ion-item>
+                <ion-label position="floating">Marca</ion-label>
+                <ion-input id="marca" v-model="carro.marca"></ion-input>
               </ion-item>
             </ion-col>
             <ion-col size="6">
               <ion-item>
                 <ion-label>Ano</ion-label>
                 <ion-datetime
+                  id="ano"
+                  v-model="carro.ano"
                   :picker-options="customPickerOptions"
                   placeholder="Ano"
                   display-format="YYYY"
-                  min="1960"
+                  min="1940"
                   :max="anoAtual + 1"
                 ></ion-datetime>
               </ion-item>
             </ion-col>
-            <ion-col> ion-col </ion-col>
+            <ion-col size="6">
+              <ion-item>
+                <ion-label>Situação</ion-label>
+                <ion-select
+                  placeholder="Selecione"
+                  id="vendido"
+                  v-model="carro.vendido"
+                >
+                  <ion-select-option value="1">Vendido</ion-select-option>
+                  <ion-select-option value="0">Disponível</ion-select-option>
+                </ion-select>
+              </ion-item>
+            </ion-col>
+            <ion-col size="12">
+              <ion-item>
+                <ion-label rows="12" position="floating">Descrição</ion-label>
+                <ion-textarea
+                  id="descricao"
+                  v-model="carro.descricao"
+                ></ion-textarea>
+              </ion-item>
+            </ion-col>
           </ion-row>
         </ion-grid>
+        <ion-button size="large" @click="salvar()" color="success"
+          >Inserir</ion-button
+        >
       </div>
     </ion-content>
   </ion-page>
@@ -62,8 +94,12 @@ import {
   IonTitle,
   IonToolbar,
 } from "@ionic/vue";
+import { defineComponent } from "vue";
+import $ from "jquery";
 
-export default {
+import { API } from "./../class/Variables";
+
+export default defineComponent({
   name: "Add",
   components: {
     IonButtons,
@@ -75,27 +111,58 @@ export default {
     IonTitle,
     IonToolbar,
   },
-  setup(){
-const customPickerOptions = {
-      buttons: [{
-        text: 'Pronto',
-        handler: () => console.log('Clicked Save!')
-      }, {
-        text: 'Log',
-        handler: () => {
-          console.log('Clicked Log. Do not Dismiss.');
-          return false;
-        }
-      }]
-    }
+  data() {
+    return {
+      anoAtual: new Date().getFullYear(),
+
+      carro: {
+        modelo: null as any,
+        ano: null as any,
+        veiculo: null as any,
+        descricao: null as any,
+        marca: null as any,
+        vendido: null as any,
+      },
+      customPickerOptions: {
+        buttons: [
+          {
+            text: "Pronto",
+            handler: () => console.log("Clicked Save!"),
+          },
+          {
+            text: "Log",
+            handler: () => {
+              console.log("Clicked Log. Do not Dismiss.");
+              return false;
+            },
+          },
+        ],
+      },
+    };
   },
-   data() {
-        return {
-            anoAtual: new Date().getFullYear(),
-            
-        };
+  methods: {
+    salvar: function () {
+      const ano = '' + $("#ano").val();
+      console.log(ano);
+      const dados = {
+        veiculo: $("#veiculo").val(),
+        marca: $("#marca").val(),
+        ano: new Date(ano).getFullYear(),
+        vendido: $("#vendido").val(),
+        modelo: $("#modelo").val(),
+        descricao: $("#veiculo").val(),
+      };
+      console.log(dados);
+      $.ajax({
+        url: API + "/veiculos",
+        type: "POST",
+        data: dados,
+      }).done((res: any) => {
+        console.log(res);
+      });
     },
-};
+  },
+});
 </script>
 
 <style scoped>
@@ -104,8 +171,6 @@ const customPickerOptions = {
   position: absolute;
   left: 0;
   right: 0;
-  top: 50%;
-  transform: translateY(-50%);
 }
 
 #container strong {

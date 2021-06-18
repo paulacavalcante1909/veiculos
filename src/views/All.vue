@@ -1,14 +1,15 @@
 <template>
   <ion-page>
     <ion-header :translucent="true">
-      <ion-toolbar>
-        <ion-buttons slot="start">
-          <ion-menu-button  ></ion-menu-button>
-        </ion-buttons>
-        <ion-title>Todos os veículos</ion-title>
-      </ion-toolbar>
+      <ion-buttons slot="start">
+        <ion-menu-button></ion-menu-button>
+      </ion-buttons>
+      <ion-searchbar
+        animated
+        placeholder="'chevrolet 2008'"
+        show-cancel-button="focus"
+      ></ion-searchbar>
     </ion-header>
-
     <ion-content :fullscreen="true">
       <ion-header collapse="condense">
         <ion-toolbar>
@@ -16,70 +17,74 @@
         </ion-toolbar>
       </ion-header>
 
-      <div id="container">
-       <ion-item>
-     
-    <ion-label>Button Start/End</ion-label>
-    <ion-button color="danger" slot="end">
-      Excluir
-    </ion-button>
-    <ion-button    slot="end">
-       
-      Editar
-    </ion-button>
-  </ion-item>
-  <ion-item>
-     
-    <ion-label>Button Start/End</ion-label>
-    <ion-button color="danger" slot="end">
-      Excluir
-    </ion-button>
-    <ion-button    slot="end">
-       
-      Editar
-    </ion-button>
-  </ion-item>
-  <ion-item>
-     
-    <ion-label>Button Start/End</ion-label>
-    <ion-button  color="danger" slot="end">
-       
-      Excluir
-    </ion-button>
-       <ion-button    slot="end">
-       
-      Editar
-    </ion-button>
-  </ion-item>
-
+      <div id="container" v-if="veiculos != null">
+        <ion-card v-for="(index, veiculo) in veiculos" :key="index">
+          <ion-card-header>
+            <ion-card-subtitle>
+              {{ veiculo.id }} | {{ veiculo.modelo }}|
+              {{ veiculo.ano }}</ion-card-subtitle
+            >
+            <ion-card-title>Carro</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            {{ veiculo.descricao }} <br />
+            <hr />
+            <ion-button slot="end" color="success">Editar</ion-button>
+            <ion-button slot="end" color="danger"
+              >Excluir</ion-button
+            ></ion-card-content
+          >
+        </ion-card>
+      </div>
+      <div id="container" v-else>
+        <h1>Não há veículos cadastrados</h1>
       </div>
     </ion-content>
   </ion-page>
 </template>
 
 <script lang="ts">
-import {
-  IonButtons,
-  IonContent,
-  IonHeader,
-  IonMenuButton,
-  IonPage,
-  IonTitle,
-  IonToolbar,
-} from "@ionic/vue";
+import { IonContent, IonPage, IonButton } from "@ionic/vue";
+import { defineComponent } from "vue";
+import axios from "axios";
 
-export default {
+import { API } from "./../class/Variables";
+
+export default defineComponent({
   name: "All",
   components: {
-    IonButtons,
     IonContent,
-    IonHeader,
-    IonMenuButton,
     IonPage,
-    IonTitle,
-    IonToolbar,
+    IonButton,
   },
-};
+
+  data() {
+    return {
+      veiculos: null,
+    };
+  },
+  methods: {
+    listar: function () {
+      axios
+        .get(API + "/veiculos")
+        .then((response) => {
+          if (response.data.length > 0) {
+           
+            this.veiculos = response.data;
+             console.log(this.veiculos);
+          } else {
+            this.veiculos = null;
+          }
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    },
+  },
+  created: function () {
+    this.listar();
+  },
+});
 </script>
 
 <style scoped>
@@ -88,8 +93,6 @@ export default {
   position: absolute;
   left: 0;
   right: 0;
-  top: 50%;
-  transform: translateY(-50%);
 }
 
 #container strong {
