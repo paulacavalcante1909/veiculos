@@ -5,71 +5,79 @@
         <ion-buttons slot="start">
           <ion-menu-button color="primary"></ion-menu-button>
         </ion-buttons>
-        <ion-title>Adicionar um veículo</ion-title>
+        <ion-title>Editar veículo</ion-title>
       </ion-toolbar>
     </ion-header>
 
     <ion-content :fullscreen="true">
       <ion-header collapse="condense">
         <ion-toolbar>
-          <ion-title>Adicionar um veículo</ion-title>
+          <ion-title>Editar veículo</ion-title>
         </ion-toolbar>
       </ion-header>
 
-      <div id="container">
-        <ion-grid>
-          <ion-row>
-            <ion-col size="6">
-              <ion-item>
-                <ion-label position="floating">Veículo</ion-label>
-                <ion-input id="veiculo" v-model="carro.veiculo"></ion-input>
-              </ion-item>
-            </ion-col>
-            <ion-col size="6">
-              <ion-item>
-                <ion-label position="floating">Marca</ion-label>
-                <ion-input id="marca" v-model="carro.marca"></ion-input>
-              </ion-item>
-            </ion-col>
-            <ion-col size="6">
-              <ion-item>
-                <ion-label>Ano</ion-label>
-                <ion-datetime
-                  id="ano"
-                  v-model="carro.ano"
-                  placeholder="Ano"
-                  display-format="YYYY"
-                  min="1940"
-                  :max="anoAtual + 1"
-                ></ion-datetime>
-              </ion-item>
-            </ion-col>
-            <ion-col size="6">
-              <ion-item>
-                <ion-label>Situação</ion-label>
-                <ion-select
-                  placeholder="Selecione"
-                  id="vendido"
-                  v-model="carro.vendido"
-                >
-                  <ion-select-option value="1">Vendido</ion-select-option>
-                  <ion-select-option value="0">Disponível</ion-select-option>
-                </ion-select>
-              </ion-item>
-            </ion-col>
-            <ion-col size="12">
-              <ion-item>
-                <ion-label rows="12" position="floating">Descrição</ion-label>
-                <ion-textarea
-                  id="descricao"
-                  v-model="carro.descricao"
-                ></ion-textarea>
-              </ion-item>
-            </ion-col>
-          </ion-row>
-        </ion-grid>
-        <ion-button size="large" @click="salvar()" color="success"
-          >Inserir</ion-button
+      <div id="container" v-if="carro != null">
+        <form id="form_carro">
+          <ion-grid>
+            <ion-row>
+              <ion-col size="6">
+                <ion-item>
+                  <ion-label position="floating">Veículo</ion-label>
+                  <ion-input
+                    required
+                    id="veiculo"
+                    v-model="carro.veiculo"
+                  ></ion-input>
+                </ion-item>
+              </ion-col>
+              <ion-col size="6">
+                <ion-item>
+                  <ion-label position="floating">Marca</ion-label>
+                  <ion-input
+                    required
+                    id="marca"
+                    v-model="carro.marca"
+                  ></ion-input>
+                </ion-item>
+              </ion-col>
+              <ion-col size="6">
+                <ion-item>
+                  <ion-label>Ano</ion-label>
+                  <ion-datetime
+                    required
+                    id="ano"
+                    v-model="carro.ano"
+                    placeholder="Ano"
+                    display-format="YYYY"
+                    min="1940"
+                    :max="anoAtual + 1"
+                  ></ion-datetime>
+                </ion-item>
+              </ion-col>
+              <ion-col size="6">
+                <ion-item>
+                  <ion-label>Situação</ion-label>
+                  <ion-select placeholder="Selecione" required id="vendido">
+                    <ion-select-option value="1">Vendido</ion-select-option>
+                    <ion-select-option value="0">Disponível</ion-select-option>
+                  </ion-select>
+                </ion-item>
+              </ion-col>
+              <ion-col size="12">
+                <ion-item>
+                  <ion-label rows="12" position="floating">Descrição</ion-label>
+                  <ion-textarea
+                    required
+                    id="descricao"
+                    v-model="carro.descricao"
+                  ></ion-textarea>
+                </ion-item>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </form>
+        <ion-button size="large" @click="salvar(carro.id)" color="success"
+          >Salvar</ion-button
         >
       </div>
     </ion-content>
@@ -92,8 +100,8 @@ import {
   IonRow,
   IonItem,
   alertController,
-  IonPage,
   toastController,
+  IonPage,
   IonLabel,
   IonTitle,
   IonCol,
@@ -105,7 +113,7 @@ import axios from "axios";
 import { API } from "./../class/Variables";
 
 export default defineComponent({
-  name: "Add",
+  name: "Edit",
   components: {
     IonButtons,
     IonButton,
@@ -130,21 +138,29 @@ export default defineComponent({
   data() {
     return {
       anoAtual: new Date().getFullYear(),
-
-      carro: {
-        modelo: null as any,
-        ano: null as any,
-        veiculo: null as any,
-        descricao: null as any,
-        marca: null as any,
-        vendido: null as any,
-      },
+      carro: null as any,
     };
   },
   methods: {
-    salvar: function () {
+    ver: async function () {
+      const id = this.$route.params.id;
+      console.log(id);
+      axios
+        .get(API + "/veiculos/" + id)
+        .then((response) => {
+          this.carro = response.data;
+          console.log(this.carro);
+          setTimeout(() => {
+            $("#vendido").val(this.carro.vendido).trigger("change");
+          }, 300);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    },
+    salvar: function (id: any) {
       const ano = "" + $("#ano").val();
-      
+
       if (
         $("#veiculo").val() != null &&
         $("#veiculo").val() != "" &&
@@ -162,36 +178,33 @@ export default defineComponent({
           marca: $("#marca").val(),
           ano: new Date(ano).getFullYear(),
           vendido: $("#vendido").val(),
-          modelo: $("#modelo").val(),
           descricao: $("#descricao").val(),
         };
-        
         $.ajax({
-          url: API + "/veiculos",
-          type: "POST",
+          url: API + "/veiculos/" + id,
+          type: "PUT",
           data: dados,
         }).done((res: any) => {
-          
-          this.presentAlertConfirm(res.id);
+          this.presentAlertConfirm(id);
         });
-      } else {
-        this.openToast("Todos os campos são obrigatórios");
+      }else{
+        this.openToast('Todos os campos são obrigatórios');
       }
     },
 
-    async openToast(msg: any) {
-      const toast = await toastController.create({
-        message: msg,
-        duration: 2000,
-      });
+     async openToast(msg: any) {
+      const toast = await toastController
+        .create({
+          message: msg,
+          duration: 2000
+        })
       return toast.present();
     },
     async presentAlertConfirm(id: any) {
       const alert = await alertController.create({
         cssClass: "my-custom-class",
-        header: "Veículo inserido com sucesso!",
-        message:
-          "Veículo cadastrado com sucesso!! Código do veículo:" + id + "",
+        header: "Veículo alterado com sucesso!",
+        message: "Veículo alterado com sucesso!! Código do veículo:" + id + "",
         buttons: [
           {
             text: "Ok",
@@ -230,6 +243,9 @@ export default defineComponent({
     }
 
     */
+  },
+  created: function () {
+    this.ver();
   },
 });
 </script>

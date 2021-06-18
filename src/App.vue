@@ -6,13 +6,14 @@
           <ion-list id="inbox-list">
             <ion-list-header>CrudCar</ion-list-header>
             <br />
-         
+
             <ion-menu-toggle
               auto-hide="false"
               v-for="(p, i) in appPages"
               :key="i"
             >
               <ion-item
+                style="cursor: pointer"
                 @click="selectedIndex = i"
                 router-direction="root"
                 :router-link="p.url"
