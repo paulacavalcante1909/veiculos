@@ -1,1 +1,1 @@
-export const API = 'http://teste-reweb-com.umbler.net/api';
+export const API = '//localhost:8000/api';
